@@ -5,6 +5,10 @@
       "destination": "https://promtova.onrender.com/sitemap.xml"
     },
     {
+      "source": "/api/:path*",
+      "destination": "https://promtova.onrender.com/api/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
