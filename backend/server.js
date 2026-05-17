@@ -14,6 +14,7 @@ const promptRoutes  = require('./routes/promptRoutes');
 const requestRoutes = require('./routes/requestRoutes');
 const adminRoutes   = require('./routes/adminRoutes');
 const userRoutes    = require('./routes/userRoutes');
+const sitemapRoutes = require('./routes/sitemapRoutes');
 
 // Connect to database
 connectDB();
@@ -54,6 +55,7 @@ app.use('/api/prompts',  promptRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/admin',    adminRoutes);
 app.use('/api/user',     userRoutes);
+app.use('/sitemap.xml',  sitemapRoutes);
 
 // Health check
 app.get('/', (req, res) => {
