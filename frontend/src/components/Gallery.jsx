@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import api, { fetchPrompts, fetchFeedPrompts, searchPrompts } from '../services/api';
+import api, { fetchPrompts, fetchFeedPrompts, searchPrompts, fetchRelatedPrompts } from '../services/api';
 import GalleryCard from './GalleryCard';
 import SkeletonCard from './SkeletonCard';
 import { useNav } from '../contexts/NavContext';
@@ -10,7 +10,8 @@ const POLL_INTERVAL = 30000; // 30 seconds
 const Gallery = ({
   onItemClick,
   columns = "columns-2 md:columns-3 lg:columns-4",
-  excludeId = null
+  excludeId = null,
+  relatedToId = null
 }) => {
   // Use debouncedSearchQuery for fetches — raw searchQuery only for UI
   const { activeCategory, searchQuery, debouncedSearchQuery } = useNav();
@@ -35,7 +36,10 @@ const Gallery = ({
       const params = { page: pageNumber, limit: 12, excludeId };
       let res;
 
-      if (debouncedSearchQuery) {
+      if (relatedToId) {
+        // Dedicated related prompts endpoint — retrieves same style/category prompts
+        res = await fetchRelatedPrompts(relatedToId, params);
+      } else if (debouncedSearchQuery) {
         // Dedicated search endpoint — searches title, category, tags, prompt text
         res = await searchPrompts(debouncedSearchQuery, params);
       } else if (activeCategory === "Trending") {
@@ -67,7 +71,7 @@ const Gallery = ({
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [activeCategory, debouncedSearchQuery, excludeId]);
+  }, [activeCategory, debouncedSearchQuery, excludeId, relatedToId]);
 
   // Silent background poll — only on the viral feed, not during search
   const silentPoll = useCallback(async () => {
@@ -89,22 +93,22 @@ const Gallery = ({
     } catch (_) {}
   }, [activeCategory, debouncedSearchQuery, excludeId]);
 
-  // Trigger fetch when debounced query, category, or excludeId changes
+  // Trigger fetch when debounced query, category, excludeId, or relatedToId changes
   useEffect(() => {
     pageRef.current = 1;
     setPage(1);
     loadItems(1, true);
 
-    // Poll only on the main viral feed
+    // Poll only on the main viral feed when not viewing related prompts
     if (pollingRef.current) clearInterval(pollingRef.current);
-    if (activeCategory === "All" && !debouncedSearchQuery) {
+    if (!relatedToId && activeCategory === "All" && !debouncedSearchQuery) {
       pollingRef.current = setInterval(silentPoll, POLL_INTERVAL);
     }
 
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
     };
-  }, [activeCategory, debouncedSearchQuery, excludeId]);
+  }, [activeCategory, debouncedSearchQuery, excludeId, relatedToId]);
 
   // Infinite scroll
   const loadMore = useCallback(() => {

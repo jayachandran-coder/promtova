@@ -489,6 +489,65 @@ const getBestPrompts = async (req, res) => {
   }
 };
 
+// @desc    Get related prompts (same category/style, excluding self, sorted by tags similarity and engagement)
+// @route   GET /api/prompts/related/:id
+// @access  Public
+const getRelatedPrompts = async (req, res) => {
+  const { page = 1, limit = 12 } = req.query;
+  const promptId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(promptId)) {
+    return res.status(400).json({ message: 'Invalid prompt ID' });
+  }
+
+  try {
+    const currentPrompt = await Prompt.findById(promptId).lean();
+    if (!currentPrompt) {
+      return res.status(404).json({ message: 'Prompt not found' });
+    }
+
+    const skip = (page - 1) * parseInt(limit);
+
+    // Filter to only same category, excluding currently viewed prompt
+    const query = {
+      category: currentPrompt.category,
+      _id: { $ne: currentPrompt._id }
+    };
+
+    const currentTags = currentPrompt.tags || [];
+
+    const prompts = await Prompt.aggregate([
+      { $match: query },
+      {
+        $addFields: {
+          tagOverlap: {
+            $size: {
+              $setIntersection: [{ $ifNull: ["$tags", []] }, currentTags]
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          similarityScore: {
+            $add: [
+              { $multiply: ["$tagOverlap", 3] }, // 3 points per matching tag
+              { $multiply: [{ $ifNull: ["$engagementScore", 0] }, 0.1] } // engagement score weight
+            ]
+          }
+        }
+      },
+      { $sort: { similarityScore: -1, createdAt: -1 } },
+      { $skip: skip },
+      { $limit: parseInt(limit) }
+    ]);
+
+    res.json(prompts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 module.exports = {
   getPrompts,
   searchPrompts,
@@ -503,6 +562,8 @@ module.exports = {
   getRecommendedPrompts,
   getFeaturedCategories,
   getBestPrompts,
-  getFeedPrompts
+  getFeedPrompts,
+  getRelatedPrompts
 };
+
 

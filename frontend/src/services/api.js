@@ -60,6 +60,7 @@ export const fetchPrompts = (params = {}) => api.get('/prompts', { params });
 export const fetchFeedPrompts = (params = {}) => api.get('/prompts/feed', { params });
 export const searchPrompts = (q, params = {}) => api.get('/prompts/search', { params: { q, ...params } });
 export const fetchPromptById = (id) => api.get(`/prompts/${id}`);
+export const fetchRelatedPrompts = (id, params = {}) => api.get(`/prompts/related/${id}`, { params });
 export const uploadPrompt = (formData) => api.post('/prompts', formData, {
   headers: { 'Content-Type': 'multipart/form-data' },
 });

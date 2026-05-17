@@ -179,6 +179,7 @@ const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
           <Gallery
             onItemClick={onRelatedItemClick}
             excludeId={item._id}
+            relatedToId={item._id}
             columns="columns-2 md:columns-3 lg:columns-4 xl:columns-5"
           />
         </div>

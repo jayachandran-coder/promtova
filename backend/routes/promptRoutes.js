@@ -15,7 +15,8 @@ const {
   getRecommendedPrompts,
   getFeaturedCategories,
   getBestPrompts,
-  getFeedPrompts
+  getFeedPrompts,
+  getRelatedPrompts
 } = require('../controllers/promptController');
 
 
@@ -36,6 +37,7 @@ router.get('/recommended', optionalProtect, getRecommendedPrompts);
 router.get('/featured-categories', getFeaturedCategories);
 router.get('/best', getBestPrompts);
 router.get('/stats', protectAdmin, getAnalytics);
+router.get('/related/:id', getRelatedPrompts);
 router.get('/:id', getPromptById);
 
 
