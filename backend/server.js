@@ -41,13 +41,7 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Cache-Control headers for public prompt data
-app.use('/api/prompts', (req, res, next) => {
-  if (req.method === 'GET') {
-    res.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=60');
-  }
-  next();
-});
+// No aggressive caching - allow real-time updates
 
 // Mount API Routes
 app.use('/api/auth',     authRoutes);

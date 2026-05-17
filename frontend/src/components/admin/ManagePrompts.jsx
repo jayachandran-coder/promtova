@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Edit2, Trash2, Search, Filter, X, Save } from 'lucide-react';
-import api from '../../services/api';
+import { deletePrompt, updatePrompt } from '../../services/api';
 import { useAdmin } from '../../contexts/AdminContext';
+import axios from 'axios';
 
 const ManagePrompts = () => {
   const { prompts, setPrompts, loading, refreshAll } = useAdmin();
@@ -16,7 +17,20 @@ const ManagePrompts = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this prompt?')) {
       try {
-        await api.delete(`/prompts/${id}`);
+        const baseUrl = import.meta.env.VITE_API_URL || 'https://promtova.onrender.com/api';
+        const adminToken = localStorage.getItem('adminToken');
+        
+        // Ensure robust URL formatting
+        const targetUrl = baseUrl.endsWith('/api') 
+          ? `${baseUrl}/prompts/${id}` 
+          : `${baseUrl}/api/prompts/${id}`;
+
+        await axios.delete(targetUrl, {
+          headers: {
+            Authorization: `Bearer ${adminToken}`
+          }
+        });
+        
         // Real-time update: remove from local state immediately
         setPrompts(prev => prev.filter(p => p._id !== id));
         showSuccess('Prompt deleted successfully');
@@ -43,7 +57,7 @@ const ManagePrompts = () => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await api.put(`/prompts/${editingItem._id}`, editingItem);
+      await updatePrompt(editingItem._id, editingItem);
       // Real-time update: map through current state
       setPrompts(prev => prev.map(p => p._id === editingItem._id ? editingItem : p));
       setEditingItem(null);

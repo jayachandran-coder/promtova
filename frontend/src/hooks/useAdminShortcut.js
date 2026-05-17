@@ -1,44 +1,39 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const useAdminShortcut = () => {
-  const [sequence, setSequence] = useState([]);
+  const [sequence, setSequence] = useState('');
   const navigate = useNavigate();
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      // Safety check for e.key
       if (!e.key) return;
 
-      // We only care about the "A" key
       if (e.key.toLowerCase() === 'a') {
-        setSequence((prev) => {
-          const newSequence = [...prev, 'a'];
-          
-          if (newSequence.length === 4) {
-            navigate('/admin/login');
-            return [];
-          }
-          
-          return newSequence;
-        });
+        setSequence((prev) => prev + 'a');
       } else {
-        // Reset if any other key is pressed
-        setSequence([]);
+        setSequence('');
       }
+
+      // Reset sequence if no key is pressed for 2 seconds
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      timeoutRef.current = setTimeout(() => setSequence(''), 2000);
     };
 
     window.addEventListener('keydown', handleKeyDown);
 
-    // Reset sequence if no key is pressed for 2 seconds
-    const timeout = setTimeout(() => {
-      setSequence([]);
-    }, 2000);
-
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      clearTimeout(timeout);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
+  }, []);
+
+  useEffect(() => {
+    if (sequence === 'aaaa') {
+      setSequence('');
+      navigate('/admin/login');
+    }
   }, [sequence, navigate]);
 };
 
