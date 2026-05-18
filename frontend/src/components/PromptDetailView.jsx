@@ -90,12 +90,12 @@ const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
         
         {/* CENTERED MAIN CONTENT: Prompt Focus */}
         <div className="max-w-4xl mx-auto mb-16 md:mb-24">
-          <div className="relative aspect-[4/5] sm:aspect-square md:aspect-[16/10] w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl group bg-gray-100">
+          <div className="relative w-full min-h-[50vh] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl group bg-[#0a0a0a] flex items-center justify-center">
             {/* Image */}
             {item.imageUrl ? (
-              <img src={item.imageUrl} className="w-full h-full object-cover" alt={item.title} />
+              <img src={item.imageUrl} className="w-full h-auto max-h-[85vh] object-contain" alt={item.title} />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-900">
+              <div className="w-full h-64 md:h-[50vh] flex items-center justify-center bg-gray-900">
                  <span className="text-white/20 font-black text-4xl uppercase tracking-tighter">{item.category}</span>
               </div>
             )}
@@ -108,7 +108,7 @@ const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
             <div className="absolute top-4 md:top-8 left-4 md:left-8 z-10">
                <button 
                  onClick={onBack}
-                 className="p-2 md:p-3 bg-white/10 backdrop-blur-md rounded-xl md:rounded-2xl text-white hover:bg-white/20 transition-all border border-white/10"
+                 className="p-2 md:p-3 bg-black/50 backdrop-blur-md rounded-xl md:rounded-2xl text-white hover:bg-black/70 transition-all border border-white/10 shadow-lg"
                >
                  <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
                </button>
@@ -118,21 +118,21 @@ const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
             <div className="absolute top-4 right-4 flex flex-col gap-2 z-10 md:top-8 md:right-8 md:gap-3">
                <button 
                  onClick={handleSave}
-                 className={`p-2 md:p-4 backdrop-blur-md rounded-xl md:rounded-2xl transition-all border
-                   ${isSaved ? 'bg-white text-black border-white' : 'bg-white/10 text-white border-white/10 hover:bg-white/20'}`}
+                 className={`p-2 md:p-4 backdrop-blur-md rounded-xl md:rounded-2xl transition-all border shadow-lg
+                   ${isSaved ? 'bg-white text-black border-white' : 'bg-black/50 text-white border-white/10 hover:bg-black/70'}`}
                >
                  <Bookmark className={`w-5 h-5 md:w-6 md:h-6 ${isSaved ? 'fill-current' : ''}`} />
                </button>
                <button 
                  onClick={handleCopy}
-                 className="p-2 md:p-4 bg-white/10 backdrop-blur-md rounded-xl md:rounded-2xl text-white hover:bg-white/20 transition-all border border-white/10"
+                 className="p-2 md:p-4 bg-black/50 backdrop-blur-md rounded-xl md:rounded-2xl text-white hover:bg-black/70 transition-all border border-white/10 shadow-lg"
                >
                  {isCopied ? <Check className="w-5 h-5 md:w-6 md:h-6 text-green-400" /> : <Copy className="w-5 h-5 md:w-6 md:h-6" />}
                </button>
                <button 
                  onClick={handleLike}
-                 className={`p-2 md:p-4 backdrop-blur-md border rounded-xl md:rounded-2xl transition-all flex flex-col items-center gap-1
-                   ${isLiked ? 'bg-red-500 text-white border-red-400' : 'bg-white/10 text-white border-white/10 hover:bg-white/20'}`}
+                 className={`p-2 md:p-4 backdrop-blur-md border rounded-xl md:rounded-2xl transition-all flex flex-col items-center gap-1 shadow-lg
+                   ${isLiked ? 'bg-red-500 text-white border-red-400' : 'bg-black/50 text-white border-white/10 hover:bg-black/70'}`}
                >
                  <Heart className={`w-5 h-5 md:w-6 md:h-6 ${isLiked ? 'fill-current' : ''}`} />
                  <span className="text-[9px] md:text-[10px] font-black leading-none">{likesCount}</span>
@@ -141,18 +141,18 @@ const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
 
             {/* MOBILE ONLY: Category Badge Bottom Left */}
             <div className="md:hidden absolute bottom-4 left-4 z-10">
-               <div className="inline-flex px-3 py-1 bg-black/40 backdrop-blur-md text-white rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/10">
+               <div className="inline-flex px-3 py-1 bg-black/50 backdrop-blur-md text-white rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/10 shadow-lg">
                   {item.category}
                </div>
             </div>
 
             {/* Bottom Content Overlaid on Image (Desktop Only) */}
             <div className="hidden md:block absolute bottom-8 md:bottom-12 left-8 md:left-12 right-24 md:right-32 z-10">
-               <div className="inline-flex px-3 py-1 bg-white/20 backdrop-blur-md text-white rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/20 mb-4 md:mb-6">
+               <div className="inline-flex px-3 py-1 bg-black/50 backdrop-blur-md text-white rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/10 mb-4 md:mb-6 shadow-lg">
                  {item.category}
                </div>
 
-               <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-[1.1] mb-4 md:mb-6">
+               <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-[1.1] mb-4 md:mb-6 drop-shadow-lg">
                  {item.title}
                </h1>
 
