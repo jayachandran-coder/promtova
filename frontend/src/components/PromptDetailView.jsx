@@ -9,7 +9,7 @@ import { toggleLike, toggleSave } from '../services/api';
 import { useDonate } from '../contexts/DonateContext';
 
 const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
-  const { user, isAuthenticated, token } = useUserAuth();
+  const { user, isAuthenticated, token, openAuthModal } = useUserAuth();
   const navigate = useNavigate();
   const { openDonateWithCooldown } = useDonate();
   
@@ -39,7 +39,7 @@ const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
   }, [item, user, token]);
 
   const handleCopy = () => {
-    if (!isAuthenticated) return navigate('/login');
+    if (!isAuthenticated) return openAuthModal();
     navigator.clipboard.writeText(item.prompt);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
@@ -51,7 +51,7 @@ const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
   };
 
   const handleLike = async () => {
-    if (!isAuthenticated) return navigate('/login');
+    if (!isAuthenticated) return openAuthModal();
     const prevLiked = isLiked;
     setIsLiked(!prevLiked);
     setLikesCount(prev => prevLiked ? prev - 1 : prev + 1);
@@ -66,7 +66,7 @@ const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
   };
 
   const handleSave = async () => {
-    if (!isAuthenticated) return navigate('/login');
+    if (!isAuthenticated) return openAuthModal();
     const prevSaved = isSaved;
     setIsSaved(!prevSaved);
     try {

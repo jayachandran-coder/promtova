@@ -17,6 +17,9 @@ const BottomNav = () => {
   const location = useLocation();
   const { user, isAuthenticated } = useUserAuth();
 
+  const displayName = user?.displayName || user?.username || user?.email?.split('@')[0] || 'User';
+  const profilePhoto = user?.photoURL || user?.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${displayName}`;
+
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 z-[100] bg-white/70 backdrop-blur-xl border-t border-white/20 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.03)] glass">
       <nav className="flex items-center justify-between max-w-md mx-auto">
@@ -39,7 +42,7 @@ const BottomNav = () => {
               
               {item.id === 'profile' && isAuthenticated ? (
                 <div className={`w-6 h-6 rounded-full overflow-hidden border transition-all duration-300 ${isActive ? 'border-gray-900' : 'border-gray-200'}`}>
-                   <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`} alt="Avatar" className="w-full h-full object-cover" />
+                   <img src={profilePhoto} alt="Avatar" className="w-full h-full object-cover" />
                 </div>
               ) : (
                 <item.icon 

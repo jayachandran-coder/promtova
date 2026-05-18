@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Camera, LogOut, Bookmark, Mail, Loader2 } from 'lucide-react';
+import { Camera, LogOut, Bookmark, Mail, Loader2, LogIn } from 'lucide-react';
 import { useUserAuth } from '../contexts/UserAuthContext';
 import api from '../services/api';
 
 const ProfilePage = () => {
-  const { user, logout, setUser } = useUserAuth();
+  const { user, logout, setUser, openAuthModal } = useUserAuth();
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
 
@@ -23,9 +23,8 @@ const ProfilePage = () => {
 
     try {
       const res = await api.put('/user/profile', formData);
-      // Backend returns { success: true, data: { ...user } }
       if (res.data.success) {
-        setUser(res.data.data);
+        setUser({ ...user, ...res.data.data });
       }
     } catch (err) {
       console.error('Failed to upload profile image', err);
@@ -33,6 +32,33 @@ const ProfilePage = () => {
       setUploading(false);
     }
   };
+
+  if (!user) {
+    return (
+      <div className="min-h-screen md:min-h-[80vh] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md bg-white/80 backdrop-blur-2xl rounded-[2.5rem] border border-gray-100 shadow-2xl p-10 text-center"
+        >
+          <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <LogIn className="w-8 h-8 text-gray-400" />
+          </div>
+          <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-2">Access Denied</h2>
+          <p className="text-gray-500 text-sm font-medium mb-6">Please log in to view your profile and saved prompts.</p>
+          <button
+            onClick={openAuthModal}
+            className="w-full py-4 bg-black text-white rounded-2xl font-bold hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-black/10"
+          >
+            Sign In
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  const displayName = user.displayName || user.username || user.email?.split('@')[0] || 'User';
+  const profilePhoto = user.photoURL || user.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${displayName}`;
 
   return (
     <div className="min-h-screen md:min-h-[80vh] flex items-start md:items-center justify-center p-2 md:p-4 pt-10 md:pt-4">
@@ -51,7 +77,7 @@ const ProfilePage = () => {
                 </div>
               ) : (
                 <img 
-                  src={user?.profileImage || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username}`} 
+                  src={profilePhoto} 
                   alt="Profile" 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
@@ -72,11 +98,11 @@ const ProfilePage = () => {
           {/* User Info */}
           <div className="space-y-0.5 mb-5 md:mb-10">
             <h1 className="text-xl md:text-3xl font-black text-gray-900 tracking-tighter flex items-center justify-center gap-2">
-              {user?.username}
+              {displayName}
             </h1>
             <div className="flex items-center justify-center gap-1.5 text-gray-400 font-medium text-[10px] md:text-sm">
               <Mail className="w-3 h-3" />
-              {user?.email}
+              {user.email}
             </div>
           </div>
 
@@ -89,7 +115,7 @@ const ProfilePage = () => {
                   </div>
                   <span className="text-[10px] md:text-sm font-bold text-gray-700">Total Saves</span>
                </div>
-               <span className="text-sm md:text-lg font-black text-gray-900">{(user?.savedPrompts || []).length}</span>
+               <span className="text-sm md:text-lg font-black text-gray-900">{(user.savedPrompts || []).length}</span>
             </div>
           </div>
 
@@ -115,3 +141,4 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+

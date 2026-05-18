@@ -78,6 +78,7 @@ export const deleteUserAccount = (id) => api.delete(`/admin/users/${id}`);
 // User auth routes
 export const userRegister = (data) => api.post('/auth/register', data);
 export const userLogin = (email, password) => api.post('/auth/login', { email, password });
+export const syncFirebaseUser = (firebaseToken) => api.post('/auth/firebase-sync', { firebaseToken });
 export const getUserProfile = () => api.get('/user/profile');
 export const updateUserProfile = (userData) => api.put('/user/profile', userData);
 export const toggleLike = (id) => api.post(`/user/like/${id}`);

@@ -7,7 +7,7 @@ import api, { toggleLike, toggleSave } from '../services/api';
 import { useDonate } from '../contexts/DonateContext';
 
 const GalleryCard = React.memo(({ item, onClick }) => {
-  const { user, isAuthenticated } = useUserAuth();
+  const { user, isAuthenticated, openAuthModal } = useUserAuth();
   const navigate = useNavigate();
   const { openDonateWithCooldown } = useDonate();
   
@@ -25,7 +25,7 @@ const GalleryCard = React.memo(({ item, onClick }) => {
 
   const handleCopy = useCallback((e) => {
     e.stopPropagation();
-    if (!isAuthenticated) return navigate('/login');
+    if (!isAuthenticated) return openAuthModal();
     navigator.clipboard.writeText(item.prompt);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
@@ -34,11 +34,11 @@ const GalleryCard = React.memo(({ item, onClick }) => {
     // Track copy in backend
     api.post(`/prompts/${item._id}/track`, { action: 'copy' })
       .catch(() => {});
-  }, [isAuthenticated, item.prompt, item._id, navigate, openDonateWithCooldown]);
+  }, [isAuthenticated, item.prompt, item._id, openAuthModal, openDonateWithCooldown]);
 
   const handleLike = useCallback(async (e) => {
     e.stopPropagation();
-    if (!isAuthenticated) return navigate('/login');
+    if (!isAuthenticated) return openAuthModal();
     const prevLiked = isLiked;
     setIsLiked(!prevLiked);
     setLikesCount(prev => prevLiked ? prev - 1 : prev + 1);
@@ -50,11 +50,11 @@ const GalleryCard = React.memo(({ item, onClick }) => {
       setIsLiked(prevLiked);
       setLikesCount(prev => prevLiked ? prev + 1 : prev - 1);
     }
-  }, [isAuthenticated, isLiked, item._id, navigate]);
+  }, [isAuthenticated, isLiked, item._id, openAuthModal]);
 
   const handleSave = useCallback(async (e) => {
     e.stopPropagation();
-    if (!isAuthenticated) return navigate('/login');
+    if (!isAuthenticated) return openAuthModal();
     const prevSaved = isSaved;
     setIsSaved(!prevSaved);
     try {
@@ -63,7 +63,7 @@ const GalleryCard = React.memo(({ item, onClick }) => {
     } catch (err) {
       setIsSaved(prevSaved);
     }
-  }, [isAuthenticated, isSaved, item._id, navigate]);
+  }, [isAuthenticated, isSaved, item._id, openAuthModal]);
 
   return (
     <motion.div

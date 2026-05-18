@@ -15,7 +15,6 @@ const ExplorePage         = lazy(() => import('./pages/ExplorePage'));
 const RequestsPage        = lazy(() => import('./pages/RequestsPage'));
 const RequestDetailPage   = lazy(() => import('./pages/RequestDetailPage'));
 const LoginPage           = lazy(() => import('./pages/LoginPage'));
-const RegisterPage        = lazy(() => import('./pages/RegisterPage'));
 const SavedPromptsPage    = lazy(() => import('./pages/SavedPromptsPage'));
 const ProfilePage         = lazy(() => import('./pages/ProfilePage'));
 const DonatePage          = lazy(() => import('./pages/DonatePage'));
@@ -88,7 +87,6 @@ const AppRoutes = () => (
 
     {/* User Auth */}
     <Route path="/login" element={<LoginPage />} />
-    <Route path="/register" element={<RegisterPage />} />
 
     {/* Admin */}
     <Route path="/admin/login" element={<AdminLoginPage />} />
