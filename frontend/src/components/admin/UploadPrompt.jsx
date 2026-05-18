@@ -3,18 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, X, Image as ImageIcon, Send, CheckCircle2 } from 'lucide-react';
 import { uploadPrompt } from '../../services/api';
 import { useAdmin } from '../../contexts/AdminContext';
+import MultiSelectDropdown from './MultiSelectDropdown';
 
-const categories = [
-  "Cinematic", "Anime", "Fantasy", "Portrait", 
-  "Product Photography", "Architecture", "Fashion"
-];
+const categories = ["Girls", "Boys", "Kutties", "Cinematic", "Fashion", "Anime", "Fantasy"];
 
 const UploadPrompt = () => {
   const { refreshAll } = useAdmin();
   const [formData, setFormData] = useState({
     title: '',
     prompt: '',
-    category: 'Cinematic',
+    categories: [],
     tags: ''
   });
   const [image, setImage] = useState(null);
@@ -36,19 +34,20 @@ const UploadPrompt = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!image) return alert('Please select an image');
+    if (formData.categories.length === 0) return alert('Please select at least one category');
 
     setLoading(true);
     const data = new FormData();
     data.append('title', formData.title);
     data.append('prompt', formData.prompt);
-    data.append('category', formData.category);
+    data.append('categories', JSON.stringify(formData.categories));
     data.append('tags', formData.tags);
     data.append('image', image);
 
     try {
       await uploadPrompt(data);
       setSuccess(true);
-      setFormData({ title: '', prompt: '', category: 'Cinematic', tags: '' });
+      setFormData({ title: '', prompt: '', categories: [], tags: '' });
       setImage(null);
       setPreview(null);
       refreshAll();
@@ -129,14 +128,13 @@ const UploadPrompt = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1 text-left block">Category</label>
-                <select 
-                  className="w-full px-6 py-4 bg-gray-50 border border-transparent focus:border-gray-900 rounded-2xl outline-none transition-all text-sm font-semibold text-gray-700 appearance-none"
-                  value={formData.category}
-                  onChange={e => setFormData({...formData, category: e.target.value})}
-                >
-                  {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
-                </select>
+                <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1 text-left block">Categories</label>
+                <MultiSelectDropdown
+                  options={categories}
+                  selectedOptions={formData.categories}
+                  onChange={selected => setFormData({...formData, categories: selected})}
+                  placeholder="Select prompt categories..."
+                />
               </div>
 
               <div className="space-y-2">

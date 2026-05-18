@@ -7,10 +7,18 @@ router.get('/', async (req, res) => {
     const baseUrl = 'https://promtova.vercel.app';
 
     // Get all prompts
-    const prompts = await Prompt.find({}, 'slug category createdAt').sort({ createdAt: -1 });
+    const prompts = await Prompt.find({}, 'slug categories category createdAt').sort({ createdAt: -1 });
     
-    // Get unique categories (filter out empty ones)
-    const categories = [...new Set(prompts.map(p => p.category).filter(Boolean))];
+    // Get unique categories (filter out empty ones) from both new array and legacy field
+    const categoriesSet = new Set();
+    prompts.forEach(p => {
+      if (p.categories && p.categories.length > 0) {
+        p.categories.forEach(c => categoriesSet.add(c));
+      } else if (p.category) {
+        categoriesSet.add(p.category);
+      }
+    });
+    const categories = Array.from(categoriesSet).filter(Boolean);
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
     xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;

@@ -17,7 +17,10 @@ const userRoutes    = require('./routes/userRoutes');
 const sitemapRoutes = require('./routes/sitemapRoutes');
 
 // Connect to database
-connectDB();
+connectDB().then(() => {
+  const runMigration = require('./utils/migrate');
+  runMigration();
+});
 
 const app = express();
 

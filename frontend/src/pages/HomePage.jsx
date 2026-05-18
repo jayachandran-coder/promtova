@@ -12,10 +12,30 @@ const CATEGORY_SEO = {
     description: 'Discover the best AI image prompts ranked by popularity. Copy viral Midjourney, Stable Diffusion, anime, cinematic, and fantasy prompts instantly.',
     keywords: 'AI prompts, Midjourney prompts, best AI prompts, viral prompts, anime prompts, cinematic prompts, fantasy prompts, Stable Diffusion'
   },
+  Girls: {
+    title: 'Girls AI Image Prompts',
+    description: 'Find beautiful and realistic AI portrait prompts of girls. Copy high-quality Midjourney and Stable Diffusion aesthetic girl prompts.',
+    keywords: 'girls AI prompts, realistic girl portraits, Midjourney aesthetic girl, AI female portraits, Stable Diffusion girl art'
+  },
+  Boys: {
+    title: 'Boys AI Image Prompts',
+    description: 'Explore premium streetwear, editorial, and cinematic AI prompts of boys. Copy Midjourney and Stable Diffusion aesthetic boy prompts.',
+    keywords: 'boys AI prompts, aesthetic boy portraits, Midjourney male character, streetwear boy AI, Stable Diffusion boy'
+  },
+  Kutties: {
+    title: 'Kutties AI Image Prompts',
+    description: 'Discover adorable, artistic, and whimsical child portrait AI prompts. Copy the best Midjourney child art and toddler prompts.',
+    keywords: 'kutties AI prompts, children AI portrait, cute kids Midjourney, artistic child prompts, Stable Diffusion kids'
+  },
   Cinematic: {
     title: 'Cinematic AI Prompts',
     description: 'Explore stunning cinematic AI image prompts for Midjourney and Stable Diffusion. Epic lighting, dramatic compositions, Hollywood-style scenes.',
     keywords: 'cinematic AI prompts, Midjourney cinematic, film prompts, dramatic lighting prompts, Hollywood AI art'
+  },
+  Fashion: {
+    title: 'Fashion AI Prompts',
+    description: 'Find the best fashion AI image prompts. Editorial, haute couture, streetwear — explore Midjourney fashion prompts.',
+    keywords: 'fashion AI prompts, Midjourney fashion, editorial AI, haute couture prompts, streetwear AI art'
   },
   Anime: {
     title: 'Anime AI Image Prompts',
@@ -26,26 +46,6 @@ const CATEGORY_SEO = {
     title: 'Fantasy AI Art Prompts',
     description: 'Explore breathtaking fantasy AI prompts — magical worlds, mythical creatures, epic landscapes. Perfect for Midjourney and Stable Diffusion.',
     keywords: 'fantasy AI prompts, Midjourney fantasy, magical art prompts, dragon prompts, fantasy landscape AI'
-  },
-  Portrait: {
-    title: 'Portrait AI Prompts',
-    description: 'Discover stunning portrait AI image prompts for realistic and artistic faces. Copy the best Midjourney portrait prompts.',
-    keywords: 'portrait AI prompts, Midjourney portrait, realistic face prompts, AI portrait art'
-  },
-  Fashion: {
-    title: 'Fashion AI Prompts',
-    description: 'Find the best fashion AI image prompts. Editorial, haute couture, streetwear — explore Midjourney fashion prompts.',
-    keywords: 'fashion AI prompts, Midjourney fashion, editorial AI, haute couture prompts, streetwear AI art'
-  },
-  Architecture: {
-    title: 'Architecture AI Prompts',
-    description: 'Explore stunning architecture AI image prompts — futuristic buildings, interior design, urban landscapes for Midjourney.',
-    keywords: 'architecture AI prompts, Midjourney architecture, interior design prompts, futuristic building AI'
-  },
-  'Product Photography': {
-    title: 'Product Photography AI Prompts',
-    description: 'Discover professional product photography AI prompts for Midjourney and Stable Diffusion. Studio lighting, clean backgrounds, commercial quality.',
-    keywords: 'product photography AI prompts, Midjourney product, commercial photography prompts, studio AI art'
   }
 };
 

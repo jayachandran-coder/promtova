@@ -4,6 +4,9 @@ import { Edit2, Trash2, Search, Filter, X, Save } from 'lucide-react';
 import { deletePrompt, updatePrompt } from '../../services/api';
 import { useAdmin } from '../../contexts/AdminContext';
 import axios from 'axios';
+import MultiSelectDropdown from './MultiSelectDropdown';
+
+const categories = ["Girls", "Boys", "Kutties", "Cinematic", "Fashion", "Anime", "Fantasy"];
 
 const ManagePrompts = () => {
   const { prompts, setPrompts, loading, refreshAll } = useAdmin();
@@ -53,13 +56,21 @@ const ManagePrompts = () => {
     setTimeout(() => setErrorMessage(''), 3000);
   };
 
+  const startEditing = (p) => {
+    setEditingItem({
+      ...p,
+      categories: p.categories || (p.category ? [p.category] : []),
+      tags: Array.isArray(p.tags) ? p.tags.join(', ') : (p.tags || '')
+    });
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await updatePrompt(editingItem._id, editingItem);
-      // Real-time update: map through current state
-      setPrompts(prev => prev.map(p => p._id === editingItem._id ? editingItem : p));
+      const res = await updatePrompt(editingItem._id, editingItem);
+      // Real-time update: map through current state using backend response
+      setPrompts(prev => prev.map(p => p._id === editingItem._id ? res.data : p));
       setEditingItem(null);
       showSuccess('Prompt updated successfully');
       refreshAll();
@@ -76,7 +87,9 @@ const ManagePrompts = () => {
     const promptText = p.prompt || "";
     const matchesSearch = title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           promptText.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = activeCategory === 'All' || p.category === activeCategory;
+    const matchesCategory = activeCategory === 'All' || 
+                            (p.categories && p.categories.includes(activeCategory)) || 
+                            p.category === activeCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -95,7 +108,7 @@ const ManagePrompts = () => {
           />
         </div>
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-          {['All', 'Cinematic', 'Anime', 'Fantasy', 'Architecture'].map(cat => (
+          {['All', 'Girls', 'Boys', 'Kutties', 'Cinematic', 'Fashion', 'Anime', 'Fantasy'].map(cat => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
@@ -136,14 +149,14 @@ const ManagePrompts = () => {
                   {/* Top Category Badge */}
                   <div className="absolute top-4 left-4 z-10">
                     <span className="px-2.5 py-1 bg-black/40 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-wider text-white shadow-sm border border-white/20">
-                      {p.category}
+                      {p.categories && p.categories.length > 0 ? p.categories[0] : (p.category || 'All')}
                     </span>
                   </div>
 
                   {/* Hover Actions (Edit/Delete) */}
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 z-20">
                     <button 
-                      onClick={() => setEditingItem(p)}
+                      onClick={() => startEditing(p)}
                       className="p-3 bg-white text-gray-900 rounded-xl hover:scale-110 transition-transform shadow-xl"
                     >
                       <Edit2 className="w-5 h-5" />
@@ -192,18 +205,42 @@ const ManagePrompts = () => {
             >
               <h3 className="text-2xl font-bold text-gray-900 mb-8">Edit Prompt</h3>
               <form onSubmit={handleUpdate} className="space-y-6">
-                <input 
-                  type="text" 
-                  className="w-full px-6 py-4 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-gray-900 transition-all font-semibold"
-                  value={editingItem.title}
-                  onChange={e => setEditingItem({...editingItem, title: e.target.value})}
-                />
-                <textarea 
-                  className="w-full px-6 py-4 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-gray-900 transition-all font-semibold resize-none"
-                  rows="4"
-                  value={editingItem.prompt}
-                  onChange={e => setEditingItem({...editingItem, prompt: e.target.value})}
-                />
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1 block">Title</label>
+                  <input 
+                    type="text" 
+                    className="w-full px-6 py-4 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-gray-900 transition-all font-semibold"
+                    value={editingItem.title}
+                    onChange={e => setEditingItem({...editingItem, title: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1 block">Categories</label>
+                  <MultiSelectDropdown
+                    options={categories}
+                    selectedOptions={editingItem.categories}
+                    onChange={selected => setEditingItem({...editingItem, categories: selected})}
+                    placeholder="Select categories..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1 block">Full Prompt</label>
+                  <textarea 
+                    className="w-full px-6 py-4 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-gray-900 transition-all font-semibold resize-none"
+                    rows="4"
+                    value={editingItem.prompt}
+                    onChange={e => setEditingItem({...editingItem, prompt: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1 block">Tags (comma separated)</label>
+                  <input 
+                    type="text" 
+                    className="w-full px-6 py-4 bg-gray-50 rounded-2xl outline-none border border-transparent focus:border-gray-900 transition-all font-semibold"
+                    value={editingItem.tags}
+                    onChange={e => setEditingItem({...editingItem, tags: e.target.value})}
+                  />
+                </div>
                 <button 
                   type="submit"
                   disabled={isSaving}

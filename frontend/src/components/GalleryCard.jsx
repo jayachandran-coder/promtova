@@ -77,7 +77,7 @@ const GalleryCard = React.memo(({ item, onClick }) => {
           <img 
             src={item.imageUrl} 
             className="w-full h-full object-cover block" 
-            alt={`${item.title} – ${item.category} AI image prompt`}
+            alt={`${item.title} – ${item.categories && item.categories.length > 0 ? item.categories.join(', ') : (item.category || 'All')} AI image prompt`}
             loading="lazy"
             decoding="async"
             width="400"
@@ -92,7 +92,7 @@ const GalleryCard = React.memo(({ item, onClick }) => {
         {/* Top Category Badge - Hidden on mobile */}
         <div className="hidden md:block absolute top-3 left-3 z-10">
           <span className="px-2.5 py-1 bg-black/40 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-wider text-white shadow-sm border border-white/20">
-            {item.category}
+            {item.categories && item.categories.length > 0 ? item.categories[0] : (item.category || 'All')}
           </span>
         </div>
 

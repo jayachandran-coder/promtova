@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Upload, Image as ImageIcon } from 'lucide-react';
 import { createRequest } from '../services/api';
 
-const CATEGORIES = ["Cinematic", "Anime", "Fantasy", "Portrait", "Architecture", "Fashion", "Product Photography"];
+const CATEGORIES = ["Girls", "Boys", "Kutties", "Cinematic", "Fashion", "Anime", "Fantasy"];
 
 const RequestFormModal = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'Cinematic',
+    category: 'Girls',
     tags: ''
   });
   const [image, setImage] = useState(null);

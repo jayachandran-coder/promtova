@@ -21,7 +21,11 @@ const promptSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    required: true,
+    index: true
+  },
+  categories: {
+    type: [String],
+    default: [],
     index: true
   },
   tags: {

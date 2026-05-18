@@ -21,28 +21,39 @@ const generateSlug = (title) => {
 const getPrompts = async (req, res) => {
   const { category, search, excludeId, page = 1, limit = 20 } = req.query;
   let query = {};
+  const andFilters = [];
 
   if (category && category !== 'All') {
-    query.category = category;
+    andFilters.push({
+      $or: [
+        { categories: category },
+        { category: category }
+      ]
+    });
   }
 
   if (search && search.trim()) {
     const regex = new RegExp(search.trim(), 'i');
-    query.$or = [
-      { title: regex },
-      { category: regex },
-      { tags: { $in: [regex] } },
-      { prompt: regex }
-    ];
+    andFilters.push({
+      $or: [
+        { title: regex },
+        { categories: regex },
+        { category: regex },
+        { tags: { $in: [regex] } },
+        { prompt: regex }
+      ]
+    });
   }
 
   if (excludeId) {
     query._id = { $ne: excludeId };
   }
 
-  const sortOrder = search
-    ? { engagementScore: -1, createdAt: -1 }
-    : { engagementScore: -1, createdAt: -1 };
+  if (andFilters.length > 0) {
+    query.$and = andFilters;
+  }
+
+  const sortOrder = { engagementScore: -1, createdAt: -1 };
 
   try {
     const skip = (page - 1) * parseInt(limit);
@@ -75,6 +86,7 @@ const searchPrompts = async (req, res) => {
     const prompts = await Prompt.find({
       $or: [
         { title: regex },
+        { categories: regex },
         { category: regex },
         { tags: { $in: [regex] } },
         { prompt: regex }
@@ -141,14 +153,38 @@ const getPromptById = async (req, res) => {
   }
 };
 
+// Helper to parse categories from the request body robustly
+const parseCategories = (body) => {
+  if (body.categories) {
+    if (Array.isArray(body.categories)) return body.categories;
+    try {
+      const parsed = JSON.parse(body.categories);
+      if (Array.isArray(parsed)) return parsed.map(c => c.trim()).filter(Boolean);
+    } catch (e) {}
+    if (typeof body.categories === 'string') {
+      return body.categories.split(',').map(c => c.trim()).filter(Boolean);
+    }
+  }
+  if (body.category) {
+    if (Array.isArray(body.category)) return body.category;
+    return [body.category.trim()];
+  }
+  return [];
+};
+
 // @desc    Create a prompt
 // @route   POST /api/prompts
 // @access  Private/Admin
 const createPrompt = async (req, res) => {
-  const { title, prompt, category, tags } = req.body;
+  const { title, prompt, tags } = req.body;
 
   if (!req.file) {
     return res.status(400).json({ message: 'Please upload an image' });
+  }
+
+  const parsedCategories = parseCategories(req.body);
+  if (parsedCategories.length === 0) {
+    return res.status(400).json({ message: 'Please select at least one category' });
   }
 
   try {
@@ -161,8 +197,9 @@ const createPrompt = async (req, res) => {
       title,
       slug,
       prompt,
-      category,
-      tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
+      categories: parsedCategories,
+      category: parsedCategories[0] || '', // legacy fallback
+      tags: tags ? (Array.isArray(tags) ? tags : tags.split(',').map(tag => tag.trim())) : [],
       imageUrl
     });
 
@@ -176,7 +213,7 @@ const createPrompt = async (req, res) => {
 // @route   PUT /api/prompts/:id
 // @access  Private/Admin
 const updatePrompt = async (req, res) => {
-  const { title, prompt, category, tags } = req.body;
+  const { title, prompt, tags } = req.body;
 
   try {
     const promptToUpdate = await Prompt.findById(req.params.id);
@@ -184,9 +221,15 @@ const updatePrompt = async (req, res) => {
     if (promptToUpdate) {
       promptToUpdate.title = title || promptToUpdate.title;
       promptToUpdate.prompt = prompt || promptToUpdate.prompt;
-      promptToUpdate.category = category || promptToUpdate.category;
+      
+      const parsedCategories = parseCategories(req.body);
+      if (parsedCategories.length > 0) {
+        promptToUpdate.categories = parsedCategories;
+        promptToUpdate.category = parsedCategories[0]; // legacy fallback
+      }
+
       if (tags) {
-        promptToUpdate.tags = tags.split(',').map(tag => tag.trim());
+        promptToUpdate.tags = Array.isArray(tags) ? tags : tags.split(',').map(tag => tag.trim());
       }
 
       const updatedPrompt = await promptToUpdate.save();
@@ -260,7 +303,7 @@ const trackInteraction = async (req, res) => {
       user: userId,
       prompt: promptId,
       action,
-      category: prompt.category
+      category: prompt.categories && prompt.categories.length > 0 ? prompt.categories[0] : (prompt.category || 'All')
     });
 
     res.json({ success: true, copies: prompt.copies, engagementScore: newEngagementScore, trendingScore: prompt.trendingScore });
@@ -298,13 +341,13 @@ const getMostLikedPrompts = async (req, res) => {
 // @access  Public
 const getFeaturedCategories = async (req, res) => {
   const categories = [
+    { name: 'Girls', image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&q=80&w=400' },
+    { name: 'Boys', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=400' },
+    { name: 'Kutties', image: 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&q=80&w=400' },
     { name: 'Cinematic', image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&q=80&w=400' },
-    { name: 'Anime', image: 'https://images.unsplash.com/photo-1578632292335-df3abbb0d586?auto=format&fit=crop&q=80&w=400' },
-    { name: 'Fantasy', image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=400' },
-    { name: 'Portrait', image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&q=80&w=400' },
-    { name: 'Architecture', image: 'https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&q=80&w=400' },
     { name: 'Fashion', image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&q=80&w=400' },
-    { name: 'Product', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=400' }
+    { name: 'Anime', image: 'https://images.unsplash.com/photo-1578632292335-df3abbb0d586?auto=format&fit=crop&q=80&w=400' },
+    { name: 'Fantasy', image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&q=80&w=400' }
   ];
   res.json(categories);
 };
@@ -357,8 +400,23 @@ const getAnalytics = async (req, res) => {
     // Find trending category (most engagement)
     const categoryEngagement = await Prompt.aggregate([
       {
+        $project: {
+          likes: 1,
+          saves: 1,
+          copies: 1,
+          categoriesList: {
+            $cond: {
+              if: { $isArray: "$categories" },
+              then: { $cond: { if: { $gt: [{ $size: "$categories" }, 0] }, then: "$categories", else: ["$category"] } },
+              else: { $cond: { if: { $gt: ["$category", null] }, then: ["$category"], else: ["Other"] } }
+            }
+          }
+        }
+      },
+      { $unwind: "$categoriesList" },
+      {
         $group: {
-          _id: "$category",
+          _id: "$categoriesList",
           score: { 
             $sum: { 
               $add: [
@@ -380,8 +438,23 @@ const getAnalytics = async (req, res) => {
     const totalEngagement = (stats.totalLikes || 0) + (stats.totalCopies || 0) + (stats.totalSaves || 0);
     const topCategories = await Prompt.aggregate([
       {
+        $project: {
+          likes: 1,
+          saves: 1,
+          copies: 1,
+          categoriesList: {
+            $cond: {
+              if: { $isArray: "$categories" },
+              then: { $cond: { if: { $gt: [{ $size: "$categories" }, 0] }, then: "$categories", else: ["$category"] } },
+              else: { $cond: { if: { $gt: ["$category", null] }, then: ["$category"], else: ["Other"] } }
+            }
+          }
+        }
+      },
+      { $unwind: "$categoriesList" },
+      {
         $group: {
-          _id: "$category",
+          _id: "$categoriesList",
           count: { 
             $sum: { 
               $add: [
@@ -394,7 +467,7 @@ const getAnalytics = async (req, res) => {
         }
       },
       { $sort: { count: -1 } },
-      { $limit: 3 },
+      { $limit: 5 }, // limit to top 5 categories
       {
         $project: {
           name: "$_id",
@@ -489,7 +562,7 @@ const getBestPrompts = async (req, res) => {
   }
 };
 
-// @desc    Get related prompts (same category/style, excluding self, sorted by tags similarity and engagement)
+// @desc    Get related prompts (sharing categories/tags, excluding self, sorted by category/tag similarity)
 // @route   GET /api/prompts/related/:id
 // @access  Public
 const getRelatedPrompts = async (req, res) => {
@@ -508,10 +581,16 @@ const getRelatedPrompts = async (req, res) => {
 
     const skip = (page - 1) * parseInt(limit);
 
-    // Filter to only same category, excluding currently viewed prompt
+    // Retrieve categories list, fallback to legacy
+    const currentCategories = currentPrompt.categories || (currentPrompt.category ? [currentPrompt.category] : []);
+
+    // Filter to prompts sharing at least one category, excluding currently viewed prompt
     const query = {
-      category: currentPrompt.category,
-      _id: { $ne: currentPrompt._id }
+      _id: { $ne: currentPrompt._id },
+      $or: [
+        { categories: { $in: currentCategories } },
+        { category: { $in: currentCategories } }
+      ]
     };
 
     const currentTags = currentPrompt.tags || [];
@@ -520,6 +599,22 @@ const getRelatedPrompts = async (req, res) => {
       { $match: query },
       {
         $addFields: {
+          categoriesList: {
+            $cond: {
+              if: { $isArray: "$categories" },
+              then: "$categories",
+              else: { $cond: { if: { $gt: ["$category", null] }, then: ["$category"], else: [] } }
+            }
+          }
+        }
+      },
+      {
+        $addFields: {
+          categoryOverlap: {
+            $size: {
+              $setIntersection: ["$categoriesList", currentCategories]
+            }
+          },
           tagOverlap: {
             $size: {
               $setIntersection: [{ $ifNull: ["$tags", []] }, currentTags]
@@ -531,8 +626,9 @@ const getRelatedPrompts = async (req, res) => {
         $addFields: {
           similarityScore: {
             $add: [
-              { $multiply: ["$tagOverlap", 3] }, // 3 points per matching tag
-              { $multiply: [{ $ifNull: ["$engagementScore", 0] }, 0.1] } // engagement score weight
+              { $multiply: ["$categoryOverlap", 10] }, // high weight for category overlap
+              { $multiply: ["$tagOverlap", 3] },        // 3 points per matching tag
+              { $multiply: [{ $ifNull: ["$engagementScore", 0] }, 0.1] } // engagement weight
             ]
           }
         }

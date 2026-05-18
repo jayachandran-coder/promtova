@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X } from 'lucide-react';
 
 const categories = [
-  "All", "Cinematic", "Anime", "Fantasy", "Portrait", "Product Photography", "Architecture", "Fashion"
+  "All", "Girls", "Boys", "Kutties", "Cinematic", "Fashion", "Anime", "Fantasy"
 ];
 
 const CategoryNavbar = ({ activeCategory, setActiveCategory, searchQuery, setSearchQuery, isSearchOpen, setIsSearchOpen }) => {

@@ -9,9 +9,25 @@ import api from '../services/api';
 import { useNav } from '../contexts/NavContext';
 
 const CATEGORY_META = {
+  Girls: {
+    description: 'Find beautiful and realistic AI portrait prompts of girls. Copy high-quality Midjourney and Stable Diffusion aesthetic girl prompts.',
+    keywords: 'girls AI prompts, realistic girl portraits, Midjourney aesthetic girl, AI female portraits, Stable Diffusion girl art'
+  },
+  Boys: {
+    description: 'Explore premium streetwear, editorial, and cinematic AI prompts of boys. Copy Midjourney and Stable Diffusion aesthetic boy prompts.',
+    keywords: 'boys AI prompts, aesthetic boy portraits, Midjourney male character, streetwear boy AI, Stable Diffusion boy'
+  },
+  Kutties: {
+    description: 'Discover adorable, artistic, and whimsical child portrait AI prompts. Copy the best Midjourney child art and toddler prompts.',
+    keywords: 'kutties AI prompts, children AI portrait, cute kids Midjourney, artistic child prompts, Stable Diffusion kids'
+  },
   Cinematic: {
     description: 'Browse the best cinematic AI image prompts on Promptova. Epic lighting, dramatic compositions, and Hollywood-style scenes for Midjourney and Stable Diffusion.',
     keywords: 'cinematic AI prompts, Midjourney cinematic, film prompts, dramatic lighting AI art, Hollywood prompts'
+  },
+  Fashion: {
+    description: 'Discover premium fashion AI image prompts. Editorial, haute couture, and streetwear Midjourney prompts for stunning visual results.',
+    keywords: 'fashion AI prompts, Midjourney fashion, editorial AI prompts, haute couture prompts, streetwear AI'
   },
   Anime: {
     description: 'Discover stunning anime AI image prompts. Copy Midjourney and Stable Diffusion prompts for beautiful anime characters, scenes, and artwork.',
@@ -20,22 +36,6 @@ const CATEGORY_META = {
   Fantasy: {
     description: 'Explore breathtaking fantasy AI prompts — magical worlds, mythical creatures, and epic landscapes for Midjourney and Stable Diffusion.',
     keywords: 'fantasy AI prompts, Midjourney fantasy, magical landscape prompts, dragon AI art, fantasy characters'
-  },
-  Portrait: {
-    description: 'Find the best portrait AI image prompts for realistic and artistic faces. Copy stunning Midjourney portrait prompts instantly.',
-    keywords: 'portrait AI prompts, Midjourney portrait, realistic face AI, artistic portrait prompts'
-  },
-  Fashion: {
-    description: 'Discover premium fashion AI image prompts. Editorial, haute couture, and streetwear Midjourney prompts for stunning visual results.',
-    keywords: 'fashion AI prompts, Midjourney fashion, editorial AI prompts, haute couture prompts, streetwear AI'
-  },
-  Architecture: {
-    description: 'Explore stunning architecture AI prompts — futuristic buildings, interior design, and urban landscapes for Midjourney and Stable Diffusion.',
-    keywords: 'architecture AI prompts, Midjourney architecture, interior design AI, futuristic building prompts'
-  },
-  'Product Photography': {
-    description: 'Discover professional product photography AI prompts. Studio lighting, clean backgrounds, and commercial quality results with Midjourney.',
-    keywords: 'product photography AI, Midjourney product prompts, commercial AI photography, studio lighting prompts'
   }
 };
 

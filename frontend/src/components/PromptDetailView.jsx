@@ -79,6 +79,10 @@ const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
 
   if (!item) return null;
 
+  const itemCategories = item.categories && item.categories.length > 0 
+    ? item.categories 
+    : (item.category ? [item.category] : []);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -96,7 +100,7 @@ const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
               <img src={item.imageUrl} className="w-full h-auto max-h-[85vh] object-contain" alt={item.title} />
             ) : (
               <div className="w-full h-64 md:h-[50vh] flex items-center justify-center bg-gray-900">
-                 <span className="text-white/20 font-black text-4xl uppercase tracking-tighter">{item.category}</span>
+                 <span className="text-white/20 font-black text-4xl uppercase tracking-tighter">{itemCategories.join(' / ')}</span>
               </div>
             )}
 
@@ -139,17 +143,29 @@ const PromptDetailView = ({ item, onBack, onRelatedItemClick }) => {
                </button>
             </div>
 
-            {/* MOBILE ONLY: Category Badge Bottom Left */}
-            <div className="md:hidden absolute bottom-4 left-4 z-10">
-               <div className="inline-flex px-3 py-1 bg-black/50 backdrop-blur-md text-white rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/10 shadow-lg">
-                  {item.category}
-               </div>
+            {/* MOBILE ONLY: Category Badges Bottom Left */}
+            <div className="md:hidden absolute bottom-4 left-4 z-10 flex flex-wrap gap-1.5">
+               {itemCategories.map(cat => (
+                 <div 
+                   key={cat} 
+                   className="inline-flex px-2.5 py-1 bg-black/50 backdrop-blur-md text-white rounded-full text-[9px] font-black uppercase tracking-widest border border-white/10 shadow-lg"
+                 >
+                    {cat}
+                 </div>
+               ))}
             </div>
 
             {/* Bottom Content Overlaid on Image (Desktop Only) */}
-            <div className="hidden md:block absolute bottom-8 md:bottom-12 left-8 md:left-12 right-24 md:right-32 z-10">
-               <div className="inline-flex px-3 py-1 bg-black/50 backdrop-blur-md text-white rounded-full text-[9px] font-black uppercase tracking-[0.2em] border border-white/10 mb-4 md:mb-6 shadow-lg">
-                 {item.category}
+            <div className="hidden md:block absolute bottom-8 md:bottom-12 left-8 md:left-12 right-24 md:right-32 z-10 text-left">
+               <div className="flex flex-wrap gap-2 mb-4 md:mb-6">
+                 {itemCategories.map(cat => (
+                   <span 
+                     key={cat}
+                     className="px-3.5 py-1.5 bg-black/40 backdrop-blur-md text-white rounded-full text-[9px] font-black uppercase tracking-widest border border-white/20 shadow-lg"
+                   >
+                     {cat}
+                   </span>
+                 ))}
                </div>
 
                <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-[1.1] mb-4 md:mb-6 drop-shadow-lg">

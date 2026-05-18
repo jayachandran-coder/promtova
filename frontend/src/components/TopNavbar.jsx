@@ -5,7 +5,7 @@ import { Search, X, ChevronDown } from 'lucide-react';
 import { useNav } from '../contexts/NavContext';
 
 const categories = [
-  "All", "Cinematic", "Anime", "Fantasy", "Portrait", "Product Photography", "Architecture", "Fashion"
+  "All", "Girls", "Boys", "Kutties", "Cinematic", "Fashion", "Anime", "Fantasy"
 ];
 
 const TopNavbar = () => {
