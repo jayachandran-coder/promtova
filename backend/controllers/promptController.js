@@ -188,7 +188,11 @@ const createPrompt = async (req, res) => {
   }
 
   try {
-    const imageUrl = await uploadToCloudinary(req.file.buffer);
+    const uploadRes = await uploadToCloudinary(req.file.buffer, true);
+    const imageUrl = uploadRes.secure_url;
+    const width = uploadRes.width;
+    const height = uploadRes.height;
+
     const baseSlug = generateSlug(title);
     // Ensure unique slug by appending timestamp if needed
     const slug = `${baseSlug}-${Date.now().toString(36)}`;
@@ -200,7 +204,9 @@ const createPrompt = async (req, res) => {
       categories: parsedCategories,
       category: parsedCategories[0] || '', // legacy fallback
       tags: tags ? (Array.isArray(tags) ? tags : tags.split(',').map(tag => tag.trim())) : [],
-      imageUrl
+      imageUrl,
+      width,
+      height
     });
 
     res.status(201).json(newPrompt);

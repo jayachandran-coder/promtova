@@ -19,6 +19,12 @@ const promptSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  width: {
+    type: Number
+  },
+  height: {
+    type: Number
+  },
   category: {
     type: String,
     index: true

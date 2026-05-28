@@ -15,6 +15,7 @@ const GalleryCard = React.memo(({ item, onClick }) => {
   const [likesCount, setLikesCount] = useState(item.likes || 0);
   const [isSaved, setIsSaved] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -65,23 +66,47 @@ const GalleryCard = React.memo(({ item, onClick }) => {
     }
   }, [isAuthenticated, isSaved, item._id, openAuthModal]);
 
+  const aspectRatio = item.width && item.height ? item.width / item.height : 2 / 3;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="masonry-item relative group rounded-xl md:rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 transform-gpu bg-gray-50"
+      className="relative group rounded-xl md:rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-shadow duration-500 transform-gpu bg-gray-100"
+      style={{
+        aspectRatio: `${aspectRatio}`
+      }}
       onClick={() => onClick(item)}
     >
-      <div className="relative w-full h-full flex">
+      <div className="relative w-full h-full">
+        {/* Shimmer skeleton loader inside the exact same container - visible until image loaded */}
+        <AnimatePresence>
+          {!imageLoaded && (
+            <motion.div
+              key="shimmer"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="absolute inset-0 z-10 premium-skeleton rounded-xl md:rounded-2xl"
+            >
+              <div className="absolute bottom-4 left-4 right-4 space-y-2">
+                <div className="h-4 bg-gray-300/60 rounded-full w-3/4" />
+                <div className="h-3 bg-gray-300/40 rounded-full w-1/2" />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {item.imageUrl && (
           <img 
             src={item.imageUrl} 
-            className="w-full h-full object-cover block" 
+            className={`w-full h-full object-cover block transition-opacity duration-500 ${
+              imageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
             alt={`${item.title} – ${item.categories && item.categories.length > 0 ? item.categories.join(', ') : (item.category || 'All')} AI image prompt`}
             loading="lazy"
             decoding="async"
-            width="400"
-            height="600"
+            onLoad={() => setImageLoaded(true)}
           />
         )}
         

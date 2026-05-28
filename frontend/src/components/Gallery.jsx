@@ -4,6 +4,7 @@ import api, { fetchPrompts, fetchFeedPrompts, searchPrompts, fetchRelatedPrompts
 import GalleryCard from './GalleryCard';
 import SkeletonCard from './SkeletonCard';
 import { useNav } from '../contexts/NavContext';
+import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
 
 const POLL_INTERVAL = 30000; // 30 seconds
 
@@ -160,58 +161,42 @@ const Gallery = ({
       </AnimatePresence>
 
       {/* Masonry Grid */}
-      <div className={`${columns} masonry-grid px-1 md:px-2 lg:px-4 xl:px-6`}>
-        <AnimatePresence mode="popLayout">
-          {loading && items.length === 0 ? (
-            Array.from({ length: 8 }).map((_, i) => (
-              <motion.div
-                key={`skel-${i}`}
-                layout
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <SkeletonCard height={i % 2 === 0 ? 'h-72' : 'h-96'} />
-              </motion.div>
-            ))
-          ) : items.length === 0 && !isTyping ? (
-            <motion.div
-              key="empty-state"
-              layout
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="col-span-full py-40 flex flex-col items-center justify-center text-center"
-            >
-              <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-                <span className="text-4xl">🔍</span>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900">
-                {debouncedSearchQuery ? `No results for "${debouncedSearchQuery}"` : 'No prompts found'}
-              </h3>
-              <p className="text-gray-400 max-w-xs mt-2">
-                {debouncedSearchQuery
-                  ? 'Try different keywords or browse by category.'
-                  : 'Check back later or try a different category.'}
-              </p>
-            </motion.div>
-          ) : (
-            items.map((item) => (
-              <motion.div
-                key={item._id}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-              >
+      <div className="px-1 md:px-2 lg:px-4 xl:px-6 w-full">
+        {loading && items.length === 0 ? (
+          <ResponsiveMasonry columnsCountBreakPoints={{ 300: 2, 768: 3, 1024: 4, 1280: 5 }}>
+            <Masonry gutter="16px">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <SkeletonCard key={`skel-${i}`} height={i % 2 === 0 ? 'h-72' : 'h-96'} />
+              ))}
+            </Masonry>
+          </ResponsiveMasonry>
+        ) : items.length === 0 && !isTyping ? (
+          <div className="py-40 flex flex-col items-center justify-center text-center w-full">
+            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 mx-auto">
+              <span className="text-4xl">🔍</span>
+            </div>
+            <h3 className="text-2xl font-bold text-gray-900">
+              {debouncedSearchQuery ? `No results for "${debouncedSearchQuery}"` : 'No prompts found'}
+            </h3>
+            <p className="text-gray-400 max-w-xs mt-2 mx-auto">
+              {debouncedSearchQuery
+                ? 'Try different keywords or browse by category.'
+                : 'Check back later or try a different category.'}
+            </p>
+          </div>
+        ) : (
+          <ResponsiveMasonry columnsCountBreakPoints={{ 300: 2, 768: 3, 1024: 4, 1280: 5 }}>
+            <Masonry gutter="16px">
+              {items.map((item) => (
                 <GalleryCard
+                  key={item._id}
                   item={item}
                   onClick={onItemClick}
                 />
-              </motion.div>
-            ))
-          )}
-        </AnimatePresence>
+              ))}
+            </Masonry>
+          </ResponsiveMasonry>
+        )}
       </div>
 
       {/* Infinite Scroll Trigger */}

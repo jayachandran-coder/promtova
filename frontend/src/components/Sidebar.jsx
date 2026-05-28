@@ -30,7 +30,7 @@ const Sidebar = () => {
 
   return (
     <aside className="hidden md:flex fixed left-0 top-16 h-[calc(100vh-64px)] transition-all duration-300 z-50 border-r border-white/20 bg-white/70 backdrop-blur-xl glass overflow-hidden">
-      <div className="flex flex-col h-full w-20 lg:w-60 xl:w-64 transition-all duration-300">
+      <div className="flex flex-col h-full w-20 lg:w-52 xl:w-56 transition-all duration-300">
         <div className={`flex flex-col h-full bg-white glass p-4 lg:p-6 w-full`}>
           {/* Navigation Menu */}
           <nav className="flex flex-col gap-1 lg:gap-2 flex-1">

@@ -11,13 +11,21 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const uploadToCloudinary = async (fileBuffer) => {
+const uploadToCloudinary = async (fileBuffer, returnDetailed = false) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       { folder: 'promptova' },
       (error, result) => {
         if (error) return reject(error);
-        resolve(result.secure_url);
+        if (returnDetailed) {
+          resolve({
+            secure_url: result.secure_url,
+            width: result.width,
+            height: result.height
+          });
+        } else {
+          resolve(result.secure_url);
+        }
       }
     );
     uploadStream.end(fileBuffer);
