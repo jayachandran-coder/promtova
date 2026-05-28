@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/sitemap.xml",
-      "destination": "https://promtova.onrender.com/sitemap.xml"
+      "destination": "https://promtova-nq5i.onrender.com/sitemap.xml"
     },
     {
       "source": "/api/:path*",
-      "destination": "https://promtova.onrender.com/api/:path*"
+      "destination": "https://promtova-nq5i.onrender.com/api/:path*"
     },
     {
       "source": "/(.*)",

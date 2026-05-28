@@ -20,7 +20,7 @@ const ManagePrompts = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this prompt?')) {
       try {
-        const baseUrl = import.meta.env.VITE_API_URL || 'https://promtova.onrender.com/api';
+        const baseUrl = import.meta.env.VITE_API_URL || 'https://promtova-nq5i.onrender.com/api';
         const adminToken = localStorage.getItem('adminToken');
         
         // Ensure robust URL formatting
